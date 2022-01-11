@@ -181,7 +181,7 @@ export default function OrcaSwap(props: any) {
                 
                 enqueueSnackbar(`Preparing to swap ${tokenAmount.toString()} ${tokenPoolA.getTokenB().name} for at least ${convertedAmount.toNumber()} ${tokenPoolA.getTokenA().name}`,{ variant: 'info' });
                 //swapPayload.transaction.partialSign(...swapPayload.signers);
-                
+
                 const signedTransaction = await sendTransaction(swapPayload.transaction, connection, {signers: swapPayload.signers});
                 enqueueSnackbar(`Transaction ready`,{ variant: 'info' });
                 await connection.confirmTransaction(signedTransaction, 'processed');
@@ -203,10 +203,10 @@ export default function OrcaSwap(props: any) {
                 enqueueSnackbar(`Preparing to swap ${tokenAmount.toString()} ${tokenPoolA.getTokenA().name} for at least ${convertedAmountB.toNumber()} ${tokenPoolB.getTokenA().name}`,{ variant: 'info' });
                 
                 transaction = swapPayload.transaction.add(swapPayloadB.transaction);
-                transaction.partialSign(...swapPayload.signers);
-                transaction.partialSign(...swapPayloadB.signers);
+                //transaction.partialSign(...swapPayload.signers);
+                //transaction.partialSign(...swapPayloadB.signers);
 
-                const signedTransaction = await sendTransaction(transaction, connection);
+                const signedTransaction = await sendTransaction(transaction, connection, {signers: [...swapPayload.signers, ...swapPayloadB.signers]});
 
                 enqueueSnackbar(`Transaction ready`,{ variant: 'info' });
                 await connection.confirmTransaction(signedTransaction, 'processed');
