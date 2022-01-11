@@ -132,17 +132,17 @@ export default function OrcaSwap(props: any) {
 
     function getPortfolioTokenBalance(swapingfrom:string){
         let withmint = '';
-        if (swapingfrom == 'USDC'){
+        if (swapingfrom === 'USDC'){
             withmint = usdc_mint;
-        } else if (swapingfrom == 'SOL'){
+        } else if (swapingfrom === 'SOL'){
             withmint = sol_mint;
-        } else if (swapingfrom == 'ORCA'){
+        } else if (swapingfrom === 'ORCA'){
             withmint = orca_mint;
         }
 
         let balance = 0;
         portfolioPositions.portfolio.map((token: any) => {
-            if (token.mint == withmint){
+            if (token.mint === withmint){
                 if (token.balance > 0)
                     balance = token.balance;
             }
@@ -180,9 +180,9 @@ export default function OrcaSwap(props: any) {
                 const swapPayload = await tokenPoolA.swap(publicKey, tokenPairA, tokenAmount, convertedAmount);
                 
                 enqueueSnackbar(`Preparing to swap ${tokenAmount.toString()} ${tokenPoolA.getTokenB().name} for at least ${convertedAmount.toNumber()} ${tokenPoolA.getTokenA().name}`,{ variant: 'info' });
-                swapPayload.transaction.partialSign(...swapPayload.signers);
-
-                const signedTransaction = await sendTransaction(swapPayload.transaction, connection);
+                //swapPayload.transaction.partialSign(...swapPayload.signers);
+                
+                const signedTransaction = await sendTransaction(swapPayload.transaction, connection, {signers: swapPayload.signers});
                 enqueueSnackbar(`Transaction ready`,{ variant: 'info' });
                 await connection.confirmTransaction(signedTransaction, 'processed');
                 enqueueSnackbar(`Swapped: ${signedTransaction}`,{ variant: 'success' });
@@ -193,8 +193,6 @@ export default function OrcaSwap(props: any) {
                 const convertedAmount = quote.getMinOutputAmount();
                 const swapPayload = await tokenPoolA.swap(publicKey, tokenPairA, tokenAmount, convertedAmount);
                 
-                //swapPayload.transaction.partialSign(...swapPayload.signers);
-                
                 //enqueueSnackbar(`Step 1. Preparing to swap ${tokenAmount.toString()} ${tokenPoolA.getTokenA().name} for at least ${convertedAmount.toNumber()} ${tokenPoolA.getTokenB().name}`,{ variant: 'info' });
                 const tokenPairB = tokenPoolB.getTokenB(); // GRAPE_USDC
                 const tokenAmountB = new Decimal(convertedAmount.toNumber()); 
@@ -202,9 +200,6 @@ export default function OrcaSwap(props: any) {
                 const convertedAmountB = quoteB.getMinOutputAmount();
                 //enqueueSnackbar(`Step 2. Preparing to swap ${tokenAmountB.toString()} ${tokenPoolB.getTokenB().name} for at least ${convertedAmountB.toNumber()} ${tokenPoolB.getTokenA().name}`,{ variant: 'info' });
                 const swapPayloadB = await tokenPoolB.swap(publicKey, tokenPairB, tokenAmountB, convertedAmountB);
-                
-                //swapPayloadB.transaction.partialSign(...swapPayload.signers);
-                
                 enqueueSnackbar(`Preparing to swap ${tokenAmount.toString()} ${tokenPoolA.getTokenA().name} for at least ${convertedAmountB.toNumber()} ${tokenPoolB.getTokenA().name}`,{ variant: 'info' });
                 
                 transaction = swapPayload.transaction.add(swapPayloadB.transaction);
@@ -633,7 +628,7 @@ export default function OrcaSwap(props: any) {
                         type="submit"
                         variant="outlined" 
                         title="Swap"
-                        disabled={userTokenBalanceInput > tokenSwapAvailableBalance}
+                        //disabled={userTokenBalanceInput > tokenSwapAvailableBalance}
                         sx={{
                             margin:1
                         }}>
